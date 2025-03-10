@@ -1,0 +1,2963 @@
+openapi: 3.0.1
+info:
+  title: VMware Fusion REST API
+  description: vmrest 1.3.1 build-24585314
+  termsOfService: http://swagger.io/terms/
+  version: 1.3.1
+servers:
+- url: /api
+tags:
+- name: VM Management
+- name: VM Power Management
+- name: VM Shared Folders Management
+- name: VM Network Adapters Management
+- name: Host Networks Management
+paths:
+  /vms:
+    get:
+      tags:
+      - VM Management
+      summary: Returns a list of VM IDs and paths for all VMs
+      operationId: getAllVMs
+      responses:
+        "200":
+          description: All VMs' ID and path
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VMID"
+                x-content-type: application/vnd.vmware.vmw.rest-v1+json
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+    post:
+      tags:
+      - VM Management
+      summary: Creates a copy of the VM
+      operationId: createVM
+      parameters:
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      requestBody:
+        description: Parameters of VM to create
+        content:
+          application/vnd.vmware.vmw.rest-v1+json:
+            schema:
+              $ref: "#/components/schemas/VMCloneParameter"
+        required: true
+      responses:
+        "201":
+          description: VM information
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/VMInformation"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "406":
+          description: Content type was not supported
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "409":
+          description: Resource state conflicts
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+      x-codegen-request-body-name: params
+  /vms/{id}:
+    get:
+      tags:
+      - VM Management
+      summary: Returns the VM setting information of a VM
+      operationId: getVM
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      responses:
+        "200":
+          description: VM information
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/VMInformation"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+    put:
+      tags:
+      - VM Management
+      summary: Updates the VM settings
+      operationId: updateVM
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      requestBody:
+        description: VM definition
+        content:
+          application/vnd.vmware.vmw.rest-v1+json:
+            schema:
+              $ref: "#/components/schemas/VMParameter"
+        required: true
+      responses:
+        "200":
+          description: VM information
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/VMInformation"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "406":
+          description: Content type was not supported
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "409":
+          description: Resource state conflicts
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+      x-codegen-request-body-name: parameters
+    delete:
+      tags:
+      - VM Management
+      summary: Deletes a VM
+      operationId: deleteVM
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      responses:
+        "204":
+          description: VM deleted
+          content: {}
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "409":
+          description: Resource state conflicts
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+  /vms/{id}/restrictions:
+    get:
+      tags:
+      - VM Management
+      summary: Returns the restrictions information of the VM
+      operationId: getVMRestrictions
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      responses:
+        "200":
+          description: VM restrictions information
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/VMRestrictionsInformation"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+  /vms/registration:
+    post:
+      tags:
+      - VM Management
+      summary: Register VM to VM Library
+      operationId: registerVM
+      requestBody:
+        description: Parameters of the VM to register
+        content:
+          application/vnd.vmware.vmw.rest-v1+json:
+            schema:
+              $ref: "#/components/schemas/VMRegisterParameter"
+        required: true
+      responses:
+        "201":
+          description: VM registration information
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/VMRrgistrationInformation"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+      x-codegen-request-body-name: parameters
+  /vms/{id}/params/{name}:
+    get:
+      tags:
+      - VM Management
+      summary: Get the VM config params
+      operationId: getVMParams
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: name
+        in: path
+        description: Name of the param
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      responses:
+        "200":
+          description: VM config parameter
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ConfigVMParamsParameter"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+  /vms/{id}/params:
+    put:
+      tags:
+      - VM Management
+      summary: update the vm config params
+      operationId: configVMParams
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      requestBody:
+        description: Parameters set to the VM
+        content:
+          application/vnd.vmware.vmw.rest-v1+json:
+            schema:
+              $ref: "#/components/schemas/ConfigVMParamsParameter"
+        required: true
+      responses:
+        "200":
+          description: VM config params updated
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+      x-codegen-request-body-name: parameters
+  /vms/{id}/power:
+    get:
+      tags:
+      - VM Power Management
+      summary: Returns the power state of the VM
+      operationId: getPowerState
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password for encrypted VM. If VM is already powered on password
+          is not needed.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      responses:
+        "200":
+          description: VM power state
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/VMPowerState"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+    put:
+      tags:
+      - VM Power Management
+      summary: Changes the VM power state
+      operationId: changePowerState
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password for encrypted VM. If VM is already powered on password
+          is not needed.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      requestBody:
+        description: "VM power operation: on, off, shutdown, suspend, pause, unpause"
+        content:
+          application/vnd.vmware.vmw.rest-v1+json:
+            schema:
+              $ref: "#/components/schemas/VMPowerOperation"
+        required: true
+      responses:
+        "200":
+          description: VM power state
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/VMPowerState"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "406":
+          description: Content type was not supported
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "409":
+          description: Resource state conflicts
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+      x-codegen-request-body-name: operation
+  /vms/{id}/sharedfolders:
+    get:
+      tags:
+      - VM Shared Folders Management
+      summary: Returns all shared folders mounted in the VM
+      operationId: getAllSharedFolders
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      responses:
+        "200":
+          description: Shared folders mounted in the VM
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/SharedFolders"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+    post:
+      tags:
+      - VM Shared Folders Management
+      summary: Mounts a new shared folder in the VM
+      operationId: createSharedFolder
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      requestBody:
+        description: Parameters of the shared folder to mount
+        content:
+          application/vnd.vmware.vmw.rest-v1+json:
+            schema:
+              $ref: "#/components/schemas/SharedFolder"
+        required: true
+      responses:
+        "201":
+          description: Shared folders mounted in the VM
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/SharedFolders"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "406":
+          description: Content type was not supported
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "409":
+          description: Resource state conflicts
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+      x-codegen-request-body-name: parameters
+  /vms/{id}/sharedfolders/{folder id}:
+    put:
+      tags:
+      - VM Shared Folders Management
+      summary: Updates a shared folder mounted in the VM
+      operationId: updataSharedFolder
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: folder id
+        in: path
+        description: ID of VM shared folder
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      requestBody:
+        description: Parameters of the shared folder to update to
+        content:
+          application/vnd.vmware.vmw.rest-v1+json:
+            schema:
+              $ref: "#/components/schemas/SharedFolderParameter"
+        required: true
+      responses:
+        "200":
+          description: Shared folders mounted in the VM
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/SharedFolders"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "406":
+          description: Content type was not supported
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+      x-codegen-request-body-name: parameters
+    delete:
+      tags:
+      - VM Shared Folders Management
+      summary: Deletes a shared folder
+      operationId: deleteSharedFolder
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: folder id
+        in: path
+        description: ID of shared folder
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      responses:
+        "204":
+          description: Shared folder deleted
+          content: {}
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+  /vms/{id}/nic:
+    get:
+      tags:
+      - VM Network Adapters Management
+      summary: Returns all network adapters in the VM
+      operationId: getAllNICDevices
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      responses:
+        "200":
+          description: Network adapters in the VM
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/NICDevices"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+    post:
+      tags:
+      - VM Network Adapters Management
+      summary: Creates a network adapter in the VM
+      operationId: createNICDevice
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      requestBody:
+        description: Parameters of network adapter to create
+        content:
+          application/vnd.vmware.vmw.rest-v1+json:
+            schema:
+              $ref: "#/components/schemas/NICDeviceParameter"
+        required: true
+      responses:
+        "201":
+          description: Information of the network adapter created
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/NICDevice"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "406":
+          description: Content type was not supported
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "409":
+          description: Resource state conflicts
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+      x-codegen-request-body-name: parameters
+  /vms/{id}/nic/{index}:
+    put:
+      tags:
+      - VM Network Adapters Management
+      summary: Updates a network adapter in the VM
+      operationId: updateNICDevice
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: index
+        in: path
+        description: Index of VM network adapter
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      requestBody:
+        description: Parameters of network adapter to update to
+        content:
+          application/vnd.vmware.vmw.rest-v1+json:
+            schema:
+              $ref: "#/components/schemas/NICDeviceParameter"
+        required: true
+      responses:
+        "200":
+          description: Information of the network adapter updated to
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/NICDevice"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "406":
+          description: Content type was not supported
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+      x-codegen-request-body-name: parameters
+    delete:
+      tags:
+      - VM Network Adapters Management
+      summary: Deletes a VM network adapter
+      operationId: deleteNICDevice
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: index
+        in: path
+        description: Index of VM network adapter
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      responses:
+        "204":
+          description: Network adapter deleted
+          content: {}
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "406":
+          description: Content type was not supported
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "409":
+          description: Resource state conflicts
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+  /vms/{id}/ip:
+    get:
+      tags:
+      - VM Network Adapters Management
+      summary: Returns the IP address of a VM
+      operationId: getIPAddress
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      responses:
+        "200":
+          description: VM IP address
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/inline_response_200"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "409":
+          description: Resource state conflicts
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+  /vms/{id}/nicips:
+    get:
+      tags:
+      - VM Network Adapters Management
+      summary: Returns the IP stack configuration of all NICs of a VM
+      operationId: getNicInfo
+      parameters:
+      - name: id
+        in: path
+        description: ID of VM
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: vmPassword
+        in: query
+        description: VM password
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: password
+      responses:
+        "200":
+          description: VM NICs IP stack configuration
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/NicIpStackAll"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "409":
+          description: Resource state conflicts
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+  /vmnets:
+    post:
+      tags:
+      - Host Networks Management
+      summary: Creates a virtual network
+      operationId: createNetwork
+      requestBody:
+        description: Host network to be created
+        content:
+          application/vnd.vmware.vmw.rest-v1+json:
+            schema:
+              $ref: "#/components/schemas/CreateVmnetParameter"
+        required: true
+      responses:
+        "201":
+          description: Virtual network
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/Network"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "406":
+          description: Content type was not supported
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "409":
+          description: Resource state conflicts
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+      x-codegen-request-body-name: parameters
+  /vmnet:
+    get:
+      tags:
+      - Host Networks Management
+      summary: Returns all virtual networks
+      operationId: getAllNetworks
+      responses:
+        "200":
+          description: All virtual networks
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/Networks"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+  /vmnet/{vmnet}/portforward:
+    get:
+      tags:
+      - Host Networks Management
+      summary: Returns all port forwardings
+      operationId: getPortforwards
+      parameters:
+      - name: vmnet
+        in: path
+        description: NAT type of virtual network
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: All port forwardings
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/Portforwards"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+  /vmnet/{vmnet}/mactoip:
+    get:
+      tags:
+      - Host Networks Management
+      summary: Returns all MAC-to-IP settings for DHCP service
+      operationId: getMACToIPs
+      parameters:
+      - name: vmnet
+        in: path
+        description: Virtual network that has DHCP enabled
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: All mac to ip settings
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/MACToIPs"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "409":
+          description: Resource state conflicts
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+  /vmnet/{vmnet}/mactoip/{mac}:
+    put:
+      tags:
+      - Host Networks Management
+      summary: Updates the MAC-to-IP binding
+      operationId: updateMacToIP
+      parameters:
+      - name: vmnet
+        in: path
+        description: Virtual network that enabled DHCP
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: mac
+        in: path
+        description: Mac address that want to be mapped with a given IP
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: "IP that will be assigned to given Mac address. If empty IP,\
+          \ the original Mac to IP binding will be deleted"
+        content:
+          application/vnd.vmware.vmw.rest-v1+json:
+            schema:
+              $ref: "#/components/schemas/MacToIPParameter"
+        required: true
+      responses:
+        "200":
+          description: Mac to IP mapping updated
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "406":
+          description: Content type was not supported
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "409":
+          description: Resource state conflicts
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+      x-codegen-request-body-name: parameters
+  /vmnet/{vmnet}/portforward/{protocol}/{port}:
+    put:
+      tags:
+      - Host Networks Management
+      summary: Updates port forwarding
+      operationId: updatePortforward
+      parameters:
+      - name: vmnet
+        in: path
+        description: NAT type of virtual network
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: protocol
+        in: path
+        description: "Protocol type: tcp, udp"
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: port
+        in: path
+        description: Host port number
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int16
+      requestBody:
+        description: Guest to forward to
+        content:
+          application/vnd.vmware.vmw.rest-v1+json:
+            schema:
+              $ref: "#/components/schemas/PortforwardParameter"
+        required: true
+      responses:
+        "200":
+          description: Port forwarding updated
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "406":
+          description: Content type was not supported
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+      x-codegen-request-body-name: parameters
+    delete:
+      tags:
+      - Host Networks Management
+      summary: Deletes port forwarding
+      operationId: deletePortforward
+      parameters:
+      - name: vmnet
+        in: path
+        description: NAT type of virtual network
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: protocol
+        in: path
+        description: "Protocol type: tcp, udp"
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: port
+        in: path
+        description: Host port number
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int16
+      responses:
+        "204":
+          description: Port forwarding deleted
+          content: {}
+        "400":
+          description: Invalid parameters
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "401":
+          description: Authentication failed
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "403":
+          description: Permission denied
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "404":
+          description: No such resource
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "406":
+          description: Content type was not supported
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Server error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        default:
+          description: Unexpected error
+          content:
+            application/vnd.vmware.vmw.rest-v1+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+components:
+  schemas:
+    VMParameter:
+      type: object
+      properties:
+        processors:
+          $ref: "#/components/schemas/VMProcessors"
+        memory:
+          $ref: "#/components/schemas/VMMemory"
+    VMInformation:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+        cpu:
+          $ref: "#/components/schemas/VMCPU"
+        memory:
+          $ref: "#/components/schemas/VMMemory"
+      example:
+        memory: 6
+        cpu:
+          processors: 0
+        id: id
+    VMRestrictionsInformation:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+        managedOrg:
+          type: string
+          description: The organization manages the VM
+        integrityconstraint:
+          type: string
+          enum:
+          - "true"
+          - "false"
+        cpu:
+          $ref: "#/components/schemas/VMCPU"
+        memory:
+          $ref: "#/components/schemas/VMMemory"
+        applianceView:
+          $ref: "#/components/schemas/VMApplianceView"
+        cddvdList:
+          $ref: "#/components/schemas/VMConnectedDeviceList"
+        floopyList:
+          $ref: "#/components/schemas/VMConnectedDeviceList"
+        firewareType:
+          $ref: "#/components/schemas/Number"
+        guestIsolation:
+          $ref: "#/components/schemas/VMGuestIsolation"
+        niclist:
+          $ref: "#/components/schemas/NICDevices"
+        parallelPortList:
+          $ref: "#/components/schemas/VMConnectedDeviceList"
+        serialPortList:
+          $ref: "#/components/schemas/VMConnectedDeviceList"
+        usbList:
+          $ref: "#/components/schemas/VMUsbList"
+        remoteVNC:
+          $ref: "#/components/schemas/VMRemoteVNC"
+      example:
+        parallelPortList: null
+        memory: 0
+        niclist:
+          num: 5
+          nics:
+          - macAddress: macAddress
+            vmnet: vmnet
+            index: 5
+            type: bridged
+          - macAddress: macAddress
+            vmnet: vmnet
+            index: 5
+            type: bridged
+        cpu:
+          processors: 0
+        floopyList: null
+        applianceView:
+          showAtPowerOn: "true"
+          port: 6
+          author: author
+          version: version
+        cddvdList:
+          devices:
+          - devicePath: devicePath
+            connectionStatus: null
+            index: null
+            startConnected: "true"
+          - devicePath: devicePath
+            connectionStatus: null
+            index: null
+            startConnected: "true"
+          num: 1
+        integrityconstraint: "true"
+        remoteVNC:
+          VNCPort: null
+          VNCEnabled: "true"
+        managedOrg: managedOrg
+        guestIsolation:
+          copyDisabled: "true"
+          dndDisabled: "true"
+          hgfsDisabled: "true"
+          pasteDisabled: "true"
+        id: id
+        firewareType: null
+        serialPortList: null
+        usbList:
+          num: null
+          usbDevices:
+          - connected: "true"
+            BackingType: null
+            index: null
+            backingInfo: backingInfo
+          - connected: "true"
+            BackingType: null
+            index: null
+            backingInfo: backingInfo
+    VMApplianceView:
+      type: object
+      properties:
+        author:
+          type: string
+        version:
+          type: string
+        port:
+          $ref: "#/components/schemas/Port"
+        showAtPowerOn:
+          type: string
+          enum:
+          - "true"
+          - "false"
+      example:
+        showAtPowerOn: "true"
+        port: 6
+        author: author
+        version: version
+    VMConnectedDevice:
+      type: object
+      properties:
+        index:
+          $ref: "#/components/schemas/Number"
+        startConnected:
+          type: string
+          enum:
+          - "true"
+          - "false"
+        connectionStatus:
+          $ref: "#/components/schemas/Number"
+        devicePath:
+          type: string
+      example:
+        devicePath: devicePath
+        connectionStatus: null
+        index: null
+        startConnected: "true"
+    VMConnectedDeviceList:
+      type: object
+      properties:
+        num:
+          $ref: "#/components/schemas/Number"
+        devices:
+          type: array
+          items:
+            $ref: "#/components/schemas/VMConnectedDevice"
+      example:
+        devices:
+        - devicePath: devicePath
+          connectionStatus: null
+          index: null
+          startConnected: "true"
+        - devicePath: devicePath
+          connectionStatus: null
+          index: null
+          startConnected: "true"
+        num: 1
+    VMGuestIsolation:
+      type: object
+      properties:
+        copyDisabled:
+          type: string
+          enum:
+          - "true"
+          - "false"
+        dndDisabled:
+          type: string
+          enum:
+          - "true"
+          - "false"
+        hgfsDisabled:
+          type: string
+          enum:
+          - "true"
+          - "false"
+        pasteDisabled:
+          type: string
+          enum:
+          - "true"
+          - "false"
+      example:
+        copyDisabled: "true"
+        dndDisabled: "true"
+        hgfsDisabled: "true"
+        pasteDisabled: "true"
+    VMUsbDevice:
+      type: object
+      properties:
+        index:
+          $ref: "#/components/schemas/Number"
+        connected:
+          type: string
+          enum:
+          - "true"
+          - "false"
+        backingInfo:
+          type: string
+        BackingType:
+          $ref: "#/components/schemas/Number"
+      example:
+        connected: "true"
+        BackingType: null
+        index: null
+        backingInfo: backingInfo
+    VMUsbList:
+      type: object
+      properties:
+        num:
+          $ref: "#/components/schemas/Number"
+        usbDevices:
+          type: array
+          items:
+            $ref: "#/components/schemas/VMUsbDevice"
+      example:
+        num: null
+        usbDevices:
+        - connected: "true"
+          BackingType: null
+          index: null
+          backingInfo: backingInfo
+        - connected: "true"
+          BackingType: null
+          index: null
+          backingInfo: backingInfo
+    VMRemoteVNC:
+      type: object
+      properties:
+        VNCEnabled:
+          type: string
+          enum:
+          - "true"
+          - "false"
+        VNCPort:
+          $ref: "#/components/schemas/Port"
+      example:
+        VNCPort: null
+        VNCEnabled: "true"
+    VMRegisterParameter:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Register VM name
+        path:
+          type: string
+          description: Register VM path
+    VMRrgistrationInformation:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Registered VM name id
+        path:
+          type: string
+          description: Registered VM path
+      example:
+        path: path
+        id: id
+    ConfigVMParamsParameter:
+      type: object
+      properties:
+        name:
+          type: string
+          description: config params name
+        value:
+          type: string
+          description: config params value
+      example:
+        name: name
+        value: value
+    VMCloneParameter:
+      required:
+      - name
+      - parentId
+      type: object
+      properties:
+        name:
+          type: string
+          description: New VM name
+        parentId:
+          type: string
+          description: Existing VM ID to clone.
+    VMID:
+      required:
+      - id
+      - path
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the VM
+        path:
+          type: string
+          description: Path of the VM
+      example:
+        path: path
+        id: id
+    VMPowerState:
+      required:
+      - power_state
+      type: object
+      properties:
+        power_state:
+          type: string
+          enum:
+          - poweredOn
+          - poweredOff
+          - paused
+          - suspended
+      example:
+        power_state: poweredOn
+    VMCPU:
+      type: object
+      properties:
+        processors:
+          $ref: "#/components/schemas/VMProcessors"
+      description: The CPU information of VM
+      example:
+        processors: 0
+    VMProcessors:
+      type: integer
+      description: Number of processor cores
+      format: int32
+      default: 1
+    VMMemory:
+      type: integer
+      description: Memory size in mega bytes
+      format: int32
+      default: 512
+    VMPowerOperation:
+      type: string
+      enum:
+      - "on"
+      - "off"
+      - shutdown
+      - suspend
+      - pause
+      - unpause
+    SharedFolder:
+      required:
+      - flags
+      - folder_id
+      - host_path
+      type: object
+      properties:
+        folder_id:
+          type: string
+          description: ID of folder which be mounted to the host
+        host_path:
+          type: string
+          description: Path of the host shared folder
+        flags:
+          type: integer
+          description: |
+            The flags property specifies how the folder will be accessed by the VM.
+            There is only one flag supported which is "4" and means read/write access.
+      example:
+        host_path: host_path
+        flags: 0
+        folder_id: folder_id
+    SharedFolders:
+      type: array
+      description: The shared folders mounted to this VM
+      items:
+        $ref: "#/components/schemas/SharedFolder"
+      x-schema-name: SharedFolders
+    SharedFolderParameter:
+      required:
+      - flags
+      - host_path
+      type: object
+      properties:
+        host_path:
+          type: string
+          description: Path of the host shared folder
+        flags:
+          type: integer
+          description: |
+            The flags property specifies how the folder will be accessed by the VM.
+            There is only one flag supported which is "4" and means read/write access.
+    NICDevice:
+      required:
+      - index
+      - macAddress
+      - type
+      - vmnet
+      type: object
+      properties:
+        index:
+          $ref: "#/components/schemas/NICIndex"
+        type:
+          type: string
+          description: The network type of network adapter
+          enum:
+          - bridged
+          - nat
+          - hostonly
+          - custom
+        vmnet:
+          type: string
+          description: The vmnet name
+        macAddress:
+          type: string
+          description: Mac address
+      example:
+        macAddress: macAddress
+        vmnet: vmnet
+        index: 5
+        type: bridged
+    NICDevices:
+      required:
+      - nics
+      - num
+      type: object
+      properties:
+        num:
+          $ref: "#/components/schemas/NICNumber"
+        nics:
+          type: array
+          description: The network adapter added to this VM
+          items:
+            $ref: "#/components/schemas/NICDevice"
+      description: The list of network adapters
+      example:
+        num: 5
+        nics:
+        - macAddress: macAddress
+          vmnet: vmnet
+          index: 5
+          type: bridged
+        - macAddress: macAddress
+          vmnet: vmnet
+          index: 5
+          type: bridged
+    NICDeviceParameter:
+      required:
+      - type
+      - vmnet
+      type: object
+      properties:
+        type:
+          type: string
+          description: The network type of network adapter
+          enum:
+          - custom
+          - bridged
+          - nat
+          - hostonly
+        vmnet:
+          type: string
+          description: "The vmnet name, it should only be used while type is custom"
+    CreateVmnetParameter:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: The host network name
+        type:
+          type: string
+          description: The host network type
+          enum:
+          - nat
+          - hostOnly
+    Network:
+      required:
+      - dhcp
+      - mask
+      - name
+      - subnet
+      - type
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of virtual network
+        type:
+          type: string
+          enum:
+          - bridged
+          - nat
+          - hostOnly
+        dhcp:
+          type: string
+          enum:
+          - "true"
+          - "false"
+        subnet:
+          type: string
+        mask:
+          type: string
+      description: The virtual network
+      example:
+        subnet: subnet
+        name: name
+        type: bridged
+        dhcp: "true"
+        mask: mask
+    Networks:
+      required:
+      - num
+      - vmnets
+      type: object
+      properties:
+        num:
+          $ref: "#/components/schemas/Number"
+        vmnets:
+          type: array
+          description: The list of virtual networks
+          items:
+            $ref: "#/components/schemas/Network"
+      description: The list of virtual networks
+      example:
+        vmnets:
+        - subnet: subnet
+          name: name
+          type: bridged
+          dhcp: "true"
+          mask: mask
+        - subnet: subnet
+          name: name
+          type: bridged
+          dhcp: "true"
+          mask: mask
+        num: 0
+    MACToIP:
+      required:
+      - ip
+      - mac
+      - vmnet
+      type: object
+      properties:
+        vmnet:
+          type: string
+        mac:
+          type: string
+        ip:
+          type: string
+      description: The MAC to IP setting
+      example:
+        vmnet: vmnet
+        ip: ip
+        mac: mac
+    MACToIPs:
+      required:
+      - num
+      type: object
+      properties:
+        num:
+          $ref: "#/components/schemas/Number"
+        mactoips:
+          type: array
+          description: The list of MAC to IP settings
+          items:
+            $ref: "#/components/schemas/MACToIP"
+      description: The list of MAC to IP settings
+      example:
+        mactoips:
+        - vmnet: vmnet
+          ip: ip
+          mac: mac
+        - vmnet: vmnet
+          ip: ip
+          mac: mac
+        num: 0
+    Portforward:
+      required:
+      - desc
+      - guest
+      - port
+      - protocol
+      type: object
+      properties:
+        port:
+          $ref: "#/components/schemas/Port"
+        protocol:
+          type: string
+          enum:
+          - tcp
+          - udp
+        desc:
+          type: string
+        guest:
+          $ref: "#/components/schemas/Portforward_guest"
+      description: The port forwarding
+      example:
+        protocol: tcp
+        port: 6
+        guest:
+          port: null
+          ip: ip
+        desc: desc
+    Portforwards:
+      required:
+      - num
+      - port_forwardings
+      type: object
+      properties:
+        num:
+          $ref: "#/components/schemas/Number"
+        port_forwardings:
+          type: array
+          description: The list of port forwardings
+          items:
+            $ref: "#/components/schemas/Portforward"
+      description: The list of port forwarding
+      example:
+        num: 0
+        port_forwardings:
+        - protocol: tcp
+          port: 6
+          guest:
+            port: null
+            ip: ip
+          desc: desc
+        - protocol: tcp
+          port: 6
+          guest:
+            port: null
+            ip: ip
+          desc: desc
+    PortforwardParameter:
+      required:
+      - guestIp
+      - guestPort
+      type: object
+      properties:
+        guestIp:
+          type: string
+        guestPort:
+          $ref: "#/components/schemas/Port"
+        desc:
+          type: string
+    NicIpStack:
+      required:
+      - mac
+      type: object
+      properties:
+        mac:
+          $ref: "#/components/schemas/MacAddress"
+        ip:
+          type: array
+          description: IP address(es) of the interface (CIDR)
+          items:
+            $ref: "#/components/schemas/IPNetAddress"
+        dns:
+          $ref: "#/components/schemas/DnsConfig"
+        wins:
+          $ref: "#/components/schemas/WinsConfig"
+        dhcp4:
+          $ref: "#/components/schemas/DhcpConfig"
+        dhcp6:
+          $ref: "#/components/schemas/DhcpConfig"
+      description: Information about a NIC
+      example:
+        wins:
+          secondary: secondary
+          primary: primary
+        dhcp4:
+          enabled: true
+          setting: setting
+        dhcp6: null
+        ip:
+        - ip
+        - ip
+        dns:
+          server:
+          - server
+          - server
+          hostname: hostname
+          search:
+          - search
+          - search
+          domainname: domainname
+        mac: mac
+    NicIpStackAll:
+      type: object
+      properties:
+        nics:
+          $ref: "#/components/schemas/NicIpStack"
+        routes:
+          type: array
+          items:
+            $ref: "#/components/schemas/RouteEntry"
+        dns:
+          $ref: "#/components/schemas/DnsConfig"
+        wins:
+          $ref: "#/components/schemas/WinsConfig"
+        dhcpv4:
+          $ref: "#/components/schemas/DhcpConfig"
+        dhcpv6:
+          $ref: "#/components/schemas/DhcpConfig"
+      description: Information about all NICs
+      example:
+        wins: null
+        routes:
+        - metric: null
+          prefix: 0
+          dest: dest
+          interface: null
+          type: null
+          nexthop: null
+        - metric: null
+          prefix: 0
+          dest: dest
+          interface: null
+          type: null
+          nexthop: null
+        dhcpv4: null
+        nics:
+          wins:
+            secondary: secondary
+            primary: primary
+          dhcp4:
+            enabled: true
+            setting: setting
+          dhcp6: null
+          ip:
+          - ip
+          - ip
+          dns:
+            server:
+            - server
+            - server
+            hostname: hostname
+            search:
+            - search
+            - search
+            domainname: domainname
+          mac: mac
+        dns: null
+        dhcpv6: null
+    Number:
+      type: integer
+      description: Number of items
+      format: int32
+      default: 0
+    NICNumber:
+      type: integer
+      description: Number of NIC devices
+      format: int32
+      default: 1
+    NICIndex:
+      type: integer
+      description: Index of Network Adapters
+      format: int32
+      default: 1
+    Port:
+      type: integer
+      description: port of communication
+      format: int16
+      default: 0
+    MacAddress:
+      type: string
+      description: "Mac address, E.g., de:ad:be:ef:12:34"
+    IPAddress:
+      type: string
+      description: IP address
+    IPNetAddress:
+      type: string
+      description: "IP address in CIDR notation, E.g., 192.168.0.1/24"
+    DnsConfig:
+      type: object
+      properties:
+        hostname:
+          type: string
+        domainname:
+          type: string
+        server:
+          type: array
+          items:
+            type: string
+        search:
+          type: array
+          items:
+            type: string
+      description: DNS configuration
+      example:
+        server:
+        - server
+        - server
+        hostname: hostname
+        search:
+        - search
+        - search
+        domainname: domainname
+    DhcpConfig:
+      required:
+      - enabled
+      - setting
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        setting:
+          type: string
+      description: DHCP configuration
+      example:
+        enabled: true
+        setting: setting
+    WinsConfig:
+      required:
+      - primary
+      - secondary
+      type: object
+      properties:
+        primary:
+          type: string
+        secondary:
+          type: string
+      description: WINS configuration
+      example:
+        secondary: secondary
+        primary: primary
+    RouteEntry:
+      required:
+      - dest
+      - interface
+      - metric
+      - prefix
+      - type
+      type: object
+      properties:
+        dest:
+          $ref: "#/components/schemas/IPAddress"
+        prefix:
+          $ref: "#/components/schemas/Number"
+        nexthop:
+          $ref: "#/components/schemas/IPAddress"
+        interface:
+          $ref: "#/components/schemas/Number"
+        type:
+          $ref: "#/components/schemas/Number"
+        metric:
+          $ref: "#/components/schemas/Number"
+      description: Routing entry
+      example:
+        metric: null
+        prefix: 0
+        dest: dest
+        interface: null
+        type: null
+        nexthop: null
+    DaemonState:
+      type: string
+      enum:
+      - "on"
+      - "off"
+    MacToIPParameter:
+      required:
+      - IP
+      type: object
+      properties:
+        IP:
+          type: string
+    ErrorModel:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+      example:
+        code: 0
+        message: message
+    inline_response_200:
+      required:
+      - ip
+      type: object
+      properties:
+        ip:
+          type: string
+          description: Guest OS IP address
+      example:
+        ip: ip
+    Portforward_guest:
+      required:
+      - ip
+      - port
+      type: object
+      properties:
+        ip:
+          type: string
+        port:
+          $ref: "#/components/schemas/Port"
+      example:
+        port: null
+        ip: ip
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+x-original-swagger-version: "2.0"
