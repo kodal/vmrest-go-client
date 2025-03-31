@@ -32,7 +32,7 @@ import (
 )
 
 var (
-	jsonCheck = regexp.MustCompile("(?i:[application|text]/json)")
+	jsonCheck = regexp.MustCompile("(?i:(?:application|text)/json|application/vnd.vmware.vmw.rest-v1\\+json)")
 	xmlCheck  = regexp.MustCompile("(?i:[application|text]/xml)")
 )
 
@@ -326,7 +326,7 @@ func (c *APIClient) decode(v interface{}, b []byte, contentType string) (err err
 				return err
 			}
 			return nil
-		} else if strings.Contains(contentType, "application/json") {
+		} else if jsonCheck.MatchString(contentType) {
 			if err = json.Unmarshal(b, v); err != nil {
 				return err
 			}
