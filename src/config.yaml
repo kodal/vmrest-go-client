@@ -1,0 +1,9 @@
+generatorName: go
+gitUserId: kodal
+gitRepoId: vmrest-go-client
+additionalProperties:
+    packageName: vmrest
+    goImportAlias: vmrest
+    enumClassPrefix: true
+    generateInterfaces: true
+    withGoMod: false

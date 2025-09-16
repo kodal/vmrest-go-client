@@ -1,40 +1,75 @@
-# {{classname}}
+# \VMNetworkAdaptersManagementAPI
 
 All URIs are relative to */api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**CreateNICDevice**](VMNetworkAdaptersManagementApi.md#CreateNICDevice) | **Post** /vms/{id}/nic | Creates a network adapter in the VM
-[**DeleteNICDevice**](VMNetworkAdaptersManagementApi.md#DeleteNICDevice) | **Delete** /vms/{id}/nic/{index} | Deletes a VM network adapter
-[**GetAllNICDevices**](VMNetworkAdaptersManagementApi.md#GetAllNICDevices) | **Get** /vms/{id}/nic | Returns all network adapters in the VM
-[**GetIPAddress**](VMNetworkAdaptersManagementApi.md#GetIPAddress) | **Get** /vms/{id}/ip | Returns the IP address of a VM
-[**GetNicInfo**](VMNetworkAdaptersManagementApi.md#GetNicInfo) | **Get** /vms/{id}/nicips | Returns the IP stack configuration of all NICs of a VM
-[**UpdateNICDevice**](VMNetworkAdaptersManagementApi.md#UpdateNICDevice) | **Put** /vms/{id}/nic/{index} | Updates a network adapter in the VM
+[**CreateNICDevice**](VMNetworkAdaptersManagementAPI.md#CreateNICDevice) | **Post** /vms/{id}/nic | Creates a network adapter in the VM
+[**DeleteNICDevice**](VMNetworkAdaptersManagementAPI.md#DeleteNICDevice) | **Delete** /vms/{id}/nic/{index} | Deletes a VM network adapter
+[**GetAllNICDevices**](VMNetworkAdaptersManagementAPI.md#GetAllNICDevices) | **Get** /vms/{id}/nic | Returns all network adapters in the VM
+[**GetIPAddress**](VMNetworkAdaptersManagementAPI.md#GetIPAddress) | **Get** /vms/{id}/ip | Returns the IP address of a VM
+[**GetNicInfo**](VMNetworkAdaptersManagementAPI.md#GetNicInfo) | **Get** /vms/{id}/nicips | Returns the IP stack configuration of all NICs of a VM
+[**UpdateNICDevice**](VMNetworkAdaptersManagementAPI.md#UpdateNICDevice) | **Put** /vms/{id}/nic/{index} | Updates a network adapter in the VM
 
-# **CreateNICDevice**
-> NicDevice CreateNICDevice(ctx, body, id, optional)
+
+
+## CreateNICDevice
+
+> NICDevice CreateNICDevice(ctx, id).NICDeviceParameter(nICDeviceParameter).VmPassword(vmPassword).Execute()
+
 Creates a network adapter in the VM
 
-### Required Parameters
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	vmrest "github.com/kodal/vmrest-go-client"
+)
+
+func main() {
+	id := "id_example" // string | ID of VM
+	nICDeviceParameter := *vmrest.NewNICDeviceParameter("Type_example", "Vmnet_example") // NICDeviceParameter | Parameters of network adapter to create
+	vmPassword := "vmPassword_example" // string | VM password (optional)
+
+	configuration := vmrest.NewConfiguration()
+	apiClient := vmrest.NewAPIClient(configuration)
+	resp, r, err := apiClient.VMNetworkAdaptersManagementAPI.CreateNICDevice(context.Background(), id).NICDeviceParameter(nICDeviceParameter).VmPassword(vmPassword).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `VMNetworkAdaptersManagementAPI.CreateNICDevice``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `CreateNICDevice`: NICDevice
+	fmt.Fprintf(os.Stdout, "Response from `VMNetworkAdaptersManagementAPI.CreateNICDevice`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**NicDeviceParameter**](NicDeviceParameter.md)| Parameters of network adapter to create | 
-  **id** | **string**| ID of VM | 
- **optional** | ***VMNetworkAdaptersManagementApiCreateNICDeviceOpts** | optional parameters | nil if no parameters
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **string** | ID of VM | 
 
-### Optional Parameters
-Optional parameters are passed through a pointer to a VMNetworkAdaptersManagementApiCreateNICDeviceOpts struct
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiCreateNICDeviceRequest struct via the builder pattern
+
+
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
-
- **vmPassword** | [**optional.Interface of string**](.md)| VM password | 
+ **nICDeviceParameter** | [**NICDeviceParameter**](NICDeviceParameter.md) | Parameters of network adapter to create | 
+ **vmPassword** | **string** | VM password | 
 
 ### Return type
 
-[**NicDevice**](NICDevice.md)
+[**NICDevice**](NICDevice.md)
 
 ### Authorization
 
@@ -42,31 +77,66 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: application/vnd.vmware.vmw.rest-v1+json
- - **Accept**: application/vnd.vmware.vmw.rest-v1+json
+- **Content-Type**: application/vnd.vmware.vmw.rest-v1+json
+- **Accept**: application/vnd.vmware.vmw.rest-v1+json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
-# **DeleteNICDevice**
-> DeleteNICDevice(ctx, id, index, optional)
+
+## DeleteNICDevice
+
+> DeleteNICDevice(ctx, id, index).VmPassword(vmPassword).Execute()
+
 Deletes a VM network adapter
 
-### Required Parameters
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	vmrest "github.com/kodal/vmrest-go-client"
+)
+
+func main() {
+	id := "id_example" // string | ID of VM
+	index := "index_example" // string | Index of VM network adapter
+	vmPassword := "vmPassword_example" // string | VM password (optional)
+
+	configuration := vmrest.NewConfiguration()
+	apiClient := vmrest.NewAPIClient(configuration)
+	r, err := apiClient.VMNetworkAdaptersManagementAPI.DeleteNICDevice(context.Background(), id, index).VmPassword(vmPassword).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `VMNetworkAdaptersManagementAPI.DeleteNICDevice``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+}
+```
+
+### Path Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **id** | **string**| ID of VM | 
-  **index** | **string**| Index of VM network adapter | 
- **optional** | ***VMNetworkAdaptersManagementApiDeleteNICDeviceOpts** | optional parameters | nil if no parameters
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **string** | ID of VM | 
+**index** | **string** | Index of VM network adapter | 
 
-### Optional Parameters
-Optional parameters are passed through a pointer to a VMNetworkAdaptersManagementApiDeleteNICDeviceOpts struct
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiDeleteNICDeviceRequest struct via the builder pattern
+
+
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **vmPassword** | [**optional.Interface of string**](.md)| VM password | 
+ **vmPassword** | **string** | VM password | 
 
 ### Return type
 
@@ -78,33 +148,69 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/vnd.vmware.vmw.rest-v1+json
+- **Content-Type**: Not defined
+- **Accept**: application/vnd.vmware.vmw.rest-v1+json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
-# **GetAllNICDevices**
-> NicDevices GetAllNICDevices(ctx, id, optional)
+
+## GetAllNICDevices
+
+> NICDevices GetAllNICDevices(ctx, id).VmPassword(vmPassword).Execute()
+
 Returns all network adapters in the VM
 
-### Required Parameters
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	vmrest "github.com/kodal/vmrest-go-client"
+)
+
+func main() {
+	id := "id_example" // string | ID of VM
+	vmPassword := "vmPassword_example" // string | VM password (optional)
+
+	configuration := vmrest.NewConfiguration()
+	apiClient := vmrest.NewAPIClient(configuration)
+	resp, r, err := apiClient.VMNetworkAdaptersManagementAPI.GetAllNICDevices(context.Background(), id).VmPassword(vmPassword).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `VMNetworkAdaptersManagementAPI.GetAllNICDevices``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetAllNICDevices`: NICDevices
+	fmt.Fprintf(os.Stdout, "Response from `VMNetworkAdaptersManagementAPI.GetAllNICDevices`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **id** | **string**| ID of VM | 
- **optional** | ***VMNetworkAdaptersManagementApiGetAllNICDevicesOpts** | optional parameters | nil if no parameters
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **string** | ID of VM | 
 
-### Optional Parameters
-Optional parameters are passed through a pointer to a VMNetworkAdaptersManagementApiGetAllNICDevicesOpts struct
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetAllNICDevicesRequest struct via the builder pattern
+
+
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **vmPassword** | [**optional.Interface of string**](.md)| VM password | 
+ **vmPassword** | **string** | VM password | 
 
 ### Return type
 
-[**NicDevices**](NICDevices.md)
+[**NICDevices**](NICDevices.md)
 
 ### Authorization
 
@@ -112,33 +218,69 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/vnd.vmware.vmw.rest-v1+json
+- **Content-Type**: Not defined
+- **Accept**: application/vnd.vmware.vmw.rest-v1+json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
-# **GetIPAddress**
-> InlineResponse200 GetIPAddress(ctx, id, optional)
+
+## GetIPAddress
+
+> GetIPAddress200Response GetIPAddress(ctx, id).VmPassword(vmPassword).Execute()
+
 Returns the IP address of a VM
 
-### Required Parameters
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	vmrest "github.com/kodal/vmrest-go-client"
+)
+
+func main() {
+	id := "id_example" // string | ID of VM
+	vmPassword := "vmPassword_example" // string | VM password (optional)
+
+	configuration := vmrest.NewConfiguration()
+	apiClient := vmrest.NewAPIClient(configuration)
+	resp, r, err := apiClient.VMNetworkAdaptersManagementAPI.GetIPAddress(context.Background(), id).VmPassword(vmPassword).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `VMNetworkAdaptersManagementAPI.GetIPAddress``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetIPAddress`: GetIPAddress200Response
+	fmt.Fprintf(os.Stdout, "Response from `VMNetworkAdaptersManagementAPI.GetIPAddress`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **id** | **string**| ID of VM | 
- **optional** | ***VMNetworkAdaptersManagementApiGetIPAddressOpts** | optional parameters | nil if no parameters
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **string** | ID of VM | 
 
-### Optional Parameters
-Optional parameters are passed through a pointer to a VMNetworkAdaptersManagementApiGetIPAddressOpts struct
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetIPAddressRequest struct via the builder pattern
+
+
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **vmPassword** | [**optional.Interface of string**](.md)| VM password | 
+ **vmPassword** | **string** | VM password | 
 
 ### Return type
 
-[**InlineResponse200**](inline_response_200.md)
+[**GetIPAddress200Response**](GetIPAddress200Response.md)
 
 ### Authorization
 
@@ -146,29 +288,65 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/vnd.vmware.vmw.rest-v1+json
+- **Content-Type**: Not defined
+- **Accept**: application/vnd.vmware.vmw.rest-v1+json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
-# **GetNicInfo**
-> NicIpStackAll GetNicInfo(ctx, id, optional)
+
+## GetNicInfo
+
+> NicIpStackAll GetNicInfo(ctx, id).VmPassword(vmPassword).Execute()
+
 Returns the IP stack configuration of all NICs of a VM
 
-### Required Parameters
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	vmrest "github.com/kodal/vmrest-go-client"
+)
+
+func main() {
+	id := "id_example" // string | ID of VM
+	vmPassword := "vmPassword_example" // string | VM password (optional)
+
+	configuration := vmrest.NewConfiguration()
+	apiClient := vmrest.NewAPIClient(configuration)
+	resp, r, err := apiClient.VMNetworkAdaptersManagementAPI.GetNicInfo(context.Background(), id).VmPassword(vmPassword).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `VMNetworkAdaptersManagementAPI.GetNicInfo``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetNicInfo`: NicIpStackAll
+	fmt.Fprintf(os.Stdout, "Response from `VMNetworkAdaptersManagementAPI.GetNicInfo`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **id** | **string**| ID of VM | 
- **optional** | ***VMNetworkAdaptersManagementApiGetNicInfoOpts** | optional parameters | nil if no parameters
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **string** | ID of VM | 
 
-### Optional Parameters
-Optional parameters are passed through a pointer to a VMNetworkAdaptersManagementApiGetNicInfoOpts struct
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetNicInfoRequest struct via the builder pattern
+
+
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **vmPassword** | [**optional.Interface of string**](.md)| VM password | 
+ **vmPassword** | **string** | VM password | 
 
 ### Return type
 
@@ -180,37 +358,74 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/vnd.vmware.vmw.rest-v1+json
+- **Content-Type**: Not defined
+- **Accept**: application/vnd.vmware.vmw.rest-v1+json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
-# **UpdateNICDevice**
-> NicDevice UpdateNICDevice(ctx, body, id, index, optional)
+
+## UpdateNICDevice
+
+> NICDevice UpdateNICDevice(ctx, id, index).NICDeviceParameter(nICDeviceParameter).VmPassword(vmPassword).Execute()
+
 Updates a network adapter in the VM
 
-### Required Parameters
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	vmrest "github.com/kodal/vmrest-go-client"
+)
+
+func main() {
+	id := "id_example" // string | ID of VM
+	index := "index_example" // string | Index of VM network adapter
+	nICDeviceParameter := *vmrest.NewNICDeviceParameter("Type_example", "Vmnet_example") // NICDeviceParameter | Parameters of network adapter to update to
+	vmPassword := "vmPassword_example" // string | VM password (optional)
+
+	configuration := vmrest.NewConfiguration()
+	apiClient := vmrest.NewAPIClient(configuration)
+	resp, r, err := apiClient.VMNetworkAdaptersManagementAPI.UpdateNICDevice(context.Background(), id, index).NICDeviceParameter(nICDeviceParameter).VmPassword(vmPassword).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `VMNetworkAdaptersManagementAPI.UpdateNICDevice``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `UpdateNICDevice`: NICDevice
+	fmt.Fprintf(os.Stdout, "Response from `VMNetworkAdaptersManagementAPI.UpdateNICDevice`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **body** | [**NicDeviceParameter**](NicDeviceParameter.md)| Parameters of network adapter to update to | 
-  **id** | **string**| ID of VM | 
-  **index** | **string**| Index of VM network adapter | 
- **optional** | ***VMNetworkAdaptersManagementApiUpdateNICDeviceOpts** | optional parameters | nil if no parameters
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **string** | ID of VM | 
+**index** | **string** | Index of VM network adapter | 
 
-### Optional Parameters
-Optional parameters are passed through a pointer to a VMNetworkAdaptersManagementApiUpdateNICDeviceOpts struct
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiUpdateNICDeviceRequest struct via the builder pattern
+
+
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
-
- **vmPassword** | [**optional.Interface of string**](.md)| VM password | 
+ **nICDeviceParameter** | [**NICDeviceParameter**](NICDeviceParameter.md) | Parameters of network adapter to update to | 
+ **vmPassword** | **string** | VM password | 
 
 ### Return type
 
-[**NicDevice**](NICDevice.md)
+[**NICDevice**](NICDevice.md)
 
 ### Authorization
 
@@ -218,8 +433,10 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: application/vnd.vmware.vmw.rest-v1+json
- - **Accept**: application/vnd.vmware.vmw.rest-v1+json
+- **Content-Type**: application/vnd.vmware.vmw.rest-v1+json
+- **Accept**: application/vnd.vmware.vmw.rest-v1+json
 
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
